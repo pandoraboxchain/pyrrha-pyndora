@@ -1,7 +1,7 @@
 from states.base import State
 from states.valodating_data import ValodatingData
 from states.events.cognitive_job_created import CognitiveJobCreated
-from states.events.valodatiion_started import ValodatiionStarted
+from states.events.validation_started import ValidationStarted
 
 class Idle(State):
 
@@ -13,5 +13,5 @@ class Idle(State):
                 worker = contract.call().activeWorkers(item)
                     if worker == self.config['worker']:
                         self.change_state(ValodatingData())
-                        self.worker.state.on_event(ValodatiionStarted(contract, event.address))
+                        self.worker.state.on_event(ValidationStarted(contract, event.address))
         return self
