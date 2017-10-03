@@ -24,3 +24,8 @@ class State(object):
         Returns the name of the State.
         """
         return self.__class__.__name__
+
+    def change_state(self, new_state):
+        worker = self.worker
+        new_state.worker = worker
+        worker.state = new_state

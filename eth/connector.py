@@ -1,6 +1,7 @@
 import json
 from os import path
 from web3 import Web3, HTTPProvider
+from states.events.cognitive_job_created import CognitiveJobCreated
 
 class ETHConnector():
 
@@ -34,8 +35,12 @@ class ETHConnector():
         print('Event done')
 
     def on_cognitive_job_created(self, event: dict):
-        address = event['args']['contractAddress']
+        address = event['args']['cognitiveJob']
         print('Got new cognitive job contract %s' % address)
+        abi = self.read_abi("CognitiveJob")
+        contract = self.web3.eth.contract(address=address, abi=abi)
+        event = CognitiveJobCreated(contract, address)
+        self.trigger(event)
 
     def read_abi(self, file: str) -> str:
         here = path.abspath(path.dirname(__file__))
