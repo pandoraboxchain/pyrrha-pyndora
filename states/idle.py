@@ -1,5 +1,7 @@
 from states.base import State
+from states.valodating_data import ValodatingData
 from states.events.cognitive_job_created import CognitiveJobCreated
+from states.events.valodatiion_started import ValodatiionStarted
 
 class Idle(State):
 
@@ -10,6 +12,6 @@ class Idle(State):
             for item in range(count):
                 worker = contract.call().activeWorkers(item)
                     if worker == self.config['worker']:
-                        self.change_state(ValodatingData(contract, event.address))
-                        self.worker.state.on_event()
+                        self.change_state(ValodatingData())
+                        self.worker.state.on_event(ValodatiionStarted(contract, event.address))
         return self
