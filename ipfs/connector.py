@@ -11,6 +11,9 @@ class IPFSConnector:
         os.chdir(self.config['data_path'])
         return self.api.get(addr)
 
+    def clear_dir(self):
+        os.chdir(self.config['data_path'])
+
     def upload_file(self, filename: str) -> str:
         os.chdir(self.config['data_path'])
         res = self.api.add(filename)
