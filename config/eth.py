@@ -2,8 +2,8 @@ CONFIGS_ETH = {
     'ROPSTEN': {
         'server': 'http://pandoraboxchain.ai',
         'port': 8545,
-        'contract': '0x628ca9d1b5ccee30dea7990e59d4b59a42dbff43',
+        'contract': '0x024280e7e9b49646e94a80968cc69ecedc016e80',
         'abi': '../abi',
-        'Worker': '0xf972f1fb18056a1e662a91c92925a011972b9f41',
+        'worker': '0xcf4c1f1919959c869fa2252789c5aa1554be514e',
     }
 }

@@ -11,7 +11,7 @@ class Idle(State):
             count = contract.call().activeWorkersCount()
             for item in range(count):
                 worker = contract.call().activeWorkers(item)
-                if worker == self.config['worker']:
+                if worker == self.worker.eth.config['worker']:
                     self.change_state(ValodatingData())
                     self.worker.state.on_event(ValidationStarted(contract, event.address))
         return self
