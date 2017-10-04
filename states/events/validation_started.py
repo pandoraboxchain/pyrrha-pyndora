@@ -1,6 +1,6 @@
-from event import Event
+from states.events.event import Event
 
-class ValodatiionStarted(Event):
+class ValidationStarted(Event):
 
     def __init__(self, job_contract, job_contract_address):
         self.job_contract = job_contract

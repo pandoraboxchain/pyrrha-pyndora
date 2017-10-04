@@ -1,1 +1,2 @@
-class Event(object)
+class Event(object):
+    pass

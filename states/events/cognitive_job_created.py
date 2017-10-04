@@ -1,4 +1,4 @@
-from event import Event
+from states.events.event import Event
 
 class CognitiveJobCreated(Event):
 
