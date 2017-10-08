@@ -48,3 +48,13 @@ class ETHConnector():
         with open(path.join(here, self.config['abi'], file), encoding='utf-8') as f:
             artifact = json.load(f)
         return artifact['abi']
+
+    def get_kernel(self, kernel):
+        abi = self.read_abi("Kernel")
+        contract = self.web3.eth.contract(address=kernel, abi=abi)
+        return contract.call().ipfsAddress()
+
+    def get_dataset(self, dataset):
+        abi = self.read_abi("Dataset")
+        contract = self.web3.eth.contract(address=dataset, abi=abi)
+        return contract.call().ipfsAddress()
