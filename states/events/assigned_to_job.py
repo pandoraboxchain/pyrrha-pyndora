@@ -1,0 +1,2 @@
+class AssignedToJob(object):
+    pass
