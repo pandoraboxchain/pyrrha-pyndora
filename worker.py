@@ -9,6 +9,7 @@ class Worker():
 
     def __init__(self):
         self.eth = ETHConnector(CONFIGS["ETH"])
+        self.eth.send_alive()
         self.eth.trigger = lambda event: self.state.on_event(event)
         thread = threading.Thread(target=self.eth.run, args=())
         thread.daemon = True

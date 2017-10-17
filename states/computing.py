@@ -1,5 +1,5 @@
 from states.base import State
-from states.events.validation_started import ValidationStarted
+from states.events.computing_started import ComputingStarted
 from states.events.cognitive_job_created import CognitiveJobCreated
 from ipfs.dataset import get_dataset
 from ipfs.kernel import get_kernel
@@ -8,7 +8,7 @@ from cognitive_work.cognitive_work import load
 class ValidatingData(State):
 
     def on_event(self, event):
-        if type(event) == ValidationStarted:
+        if type(event) == ComputingStarted:
             contract = event.job_contract
             kernel_ipfs = self.worker.eth.get_kernel(contract.call().kernel())
             dataset_ipfs = self.worker.eth.get_dataset(contract.call().dataset())
@@ -16,8 +16,8 @@ class ValidatingData(State):
             kernel_data = get_kernel(self.worker.ipfs, kernel_ipfs)
             config = self.worker.ipfs.config
             try:
-                result = load(kernel_data['model'], kernel_data['weights'], dataset_data[0], config['data_path'])
-                self.worker.eth.accept_valid_data()
+                result = load_and_run(kernel_data['model'], kernel_data['weights'], dataset_data[0], config['data_path'])
+                self.worker.eth.provide_results(result)
             except:
-                print('ValidatingData error')
+                print('Error')
         return self

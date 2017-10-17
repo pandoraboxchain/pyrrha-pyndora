@@ -2,6 +2,8 @@ import json
 from os import path
 from web3 import Web3, HTTPProvider
 from states.events.cognitive_job_created import CognitiveJobCreated
+from contract.statuses import statuses, get_status_by_number
+
 
 class ETHConnector():
 
@@ -58,3 +60,41 @@ class ETHConnector():
         abi = self.read_abi("Dataset")
         contract = self.web3.eth.contract(address=dataset, abi=abi)
         return contract.call().ipfsAddress()
+
+    def assign_job(self):
+        self.get_account()
+        self.worker_contract.transact({'from':self.config['worker']}).acceptAssignment()
+
+    def accept_valid_data(self):
+        self.get_account()
+        self.worker_contract.transact({'from':self.config['worker']}).acceptValidData()
+
+    def provide_results(self, result):
+        self.get_account()
+        self.worker_contract.transact({'from':self.config['worker']}).provideResults(result)
+
+    def get_account(self):
+        ac = self.web3.eth.account.privateKeyToAccount(self.config['private_key'])
+        return ac
+
+    def send_alive(self):
+        abi = self.read_abi("WorkerNode")
+        self.pandora_contract.call().workerNodes
+        count = self.pandora_contract.call().workerNodesCount()
+        self.worker_contract = None
+        for item in range(0, 7):
+            worker_addr = self.pandora_contract.call().workerNodes(item)
+            worker_contract = self.web3.eth.contract(address=worker_addr, abi=abi)
+            owner = worker_contract.call().owner()
+            if owner.lower()==self.config['worker'].lower():
+                self.worker_contract = worker_contract
+
+        self.get_account()
+        if get_status_by_number(self.worker_contract.call().currentState()) == "offline":
+            self.worker_contract.transact({'from':self.config['worker']}).alive()
+
+#var myContract = contractAbi.at(contractAddress);
+#// suppose you want to call a function named myFunction of myContract
+#var getData = myContract.myFunction.getData(function parameters);
+#//finally paas this data parameter to send Transaction
+#web3.eth.sendTransaction({to:Contractaddress, from:Accountaddress, data: getData});

@@ -1,4 +1,6 @@
-class AssignedToJob(object):
+from states.events.event import Event
+
+class ComputingStarted(Event):
 
     def __init__(self, job_contract, job_contract_address):
         self.job_contract = job_contract
