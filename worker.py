@@ -14,7 +14,7 @@ class Worker():
         thread = threading.Thread(target=self.eth.run, args=())
         thread.daemon = True
         thread.start()
-        print("Bla bla bla")
+        thread.join()
         self.ipfs = IPFSConnector(CONFIGS["IPFS"])
         self.state = Idle()
         self.state.worker = self

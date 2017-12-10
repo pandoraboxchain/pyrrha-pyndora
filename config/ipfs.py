@@ -3,5 +3,11 @@ CONFIGS_IPFS = {
         'server': '127.0.0.1',
         'port': 5001,
         'data_path': '/tmp',
+    },
+
+    'PANDORA': {
+        'server': 'pandoraboxchain.ai',
+        'port': 5001,
+        'data_path': '/tmp',
     }
 }

@@ -82,16 +82,15 @@ class ETHConnector():
         self.pandora_contract.call().workerNodes
         count = self.pandora_contract.call().workerNodesCount()
         self.worker_contract = None
-        for item in range(0, 7):
+        for item in range(0, count):
             worker_addr = self.pandora_contract.call().workerNodes(item)
             worker_contract = self.web3.eth.contract(address=worker_addr, abi=abi)
-            owner = worker_contract.call().owner()
-            if owner.lower()==self.config['worker'].lower():
+            if worker_addr.lower()==self.config['worker'].lower():
                 self.worker_contract = worker_contract
 
         self.get_account()
         if get_status_by_number(self.worker_contract.call().currentState()) == "offline":
-            self.worker_contract.transact({'from':self.config['worker']}).alive()
+            self.worker_contract.transact({'from':self.config['account']}).alive()
 
 #var myContract = contractAbi.at(contractAddress);
 #// suppose you want to call a function named myFunction of myContract
