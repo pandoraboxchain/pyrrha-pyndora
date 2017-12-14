@@ -1,0 +1,46 @@
+@startuml
+
+participant main
+
+[-> main: start
+activate main
+main -> main: read_config()
+deactivate main
+
+create participant ipfs
+main -->> ipfs: thread
+ipfs -> ipfs: connect
+alt success
+    ipfs -\\ main: connected
+
+    create participant eth
+    main -->> eth: thread
+    loop
+        eth -> eth: connect
+    end
+    eth -> eth: read_contracts
+    alt success
+        eth -\\ main: connected
+        eth ->>]: ask for state
+        loop
+            eth <<--]: state
+            ref over eth, ipfs
+                process_state
+            end
+            eth -> eth: listen_events
+            ...
+        end
+    else failure
+        eth -\\ main: shutdown
+        destroy eth
+        main -> ipfs: shutdown
+        destroy ipfs
+        destroy main
+    end
+else failure
+    ipfs -\\ main: shutdown
+    destroy ipfs
+    destroy main
+end
+
+@enduml
