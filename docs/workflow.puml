@@ -1,46 +1,104 @@
 @startuml
 
-participant main
+boundary webapi
+control main
+entity ipfs
+
+== Initialization ==
 
 [-> main: start
 activate main
 main -> main: read_config()
 deactivate main
 
-create participant ipfs
-main -->> ipfs: thread
-ipfs -> ipfs: connect
-alt success
-    ipfs -\\ main: connected
+create webapi
+main -->> webapi: thread
 
-    create participant eth
+main -> ipfs: init
+activate ipfs
+ipfs -->> ipfs: thread
+alt failure
+    ipfs -\\ main: shutdown
+    destroy ipfs
+    destroy main
+
+else success
+    ipfs --\\ main: connected
+    deactivate ipfs
+
+    create entity eth
     main -->> eth: thread
     loop
         eth -> eth: connect
     end
     eth -> eth: read_contracts
-    alt success
-        eth -\\ main: connected
-        eth ->>]: ask for state
-        loop
-            eth <<--]: state
-            ref over eth, ipfs
-                process_state
-            end
-            eth -> eth: listen_events
-            ...
-        end
-    else failure
-        eth -\\ main: shutdown
+
+    alt failure
+        eth --\\ main: shutdown
         destroy eth
         main -> ipfs: shutdown
         destroy ipfs
         destroy main
+
+    else success
+        eth --\\ main: connected
+
+== Main workflows ==
+
+        eth ->>]: ask for state
+        loop
+            eth <<--]: state
+            group process_state
+                create control computing
+                eth -->> computing: compute
+                activate computing
+                opt for DataValidation & Computing
+                    computing -> ipfs: load_data
+                    activate ipfs
+                    ipfs --> computing: loaded
+                    deactivate ipfs
+                    deactivate computing
+                    create control model
+                    computing -->> model: thread
+                    model -> model: run
+                    activate model
+                    model --\\ computing: completed
+                    activate computing
+                    deactivate model
+                    destroy model
+                    computing -> ipfs: upload
+                    activate ipfs
+                    ipfs --> computing: uploaded
+                    deactivate ipfs
+                end
+                computing --\\ eth: completed
+                deactivate computing
+                destroy computing
+            end
+            eth ->]: change_state
+            eth -> eth: listen_events
+            ...
+        end
     end
-else failure
-    ipfs -\\ main: shutdown
-    destroy ipfs
-    destroy main
 end
+
+== API requests ==
+
+[-> webapi: request
+activate webapi
+webapi -> main: read_state
+activate main
+main -> eth: read_state
+activate eth
+eth -> computing: read_state
+activate computing
+computing -->> eth: data
+deactivate computing
+eth -->> main: data
+deactivate eth
+main -->> webapi: results
+deactivate main
+[<<-- webapi: data
+deactivate webapi
 
 @enduml
