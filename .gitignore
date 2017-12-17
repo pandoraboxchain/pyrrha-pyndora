@@ -2,3 +2,4 @@ env/*
 *.pyc
 *.pyo
 pandora-abi/*
+.idea

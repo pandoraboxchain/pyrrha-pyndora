@@ -8,6 +8,8 @@ import threading
 class Worker():
 
     def __init__(self):
+        self.state = Idle()
+        self.state.worker = self
         self.eth = ETHConnector(CONFIGS["ETH"])
         self.eth.send_alive()
         self.eth.trigger = lambda event: self.state.on_event(event)
@@ -16,8 +18,6 @@ class Worker():
         thread.start()
         thread.join()
         self.ipfs = IPFSConnector(CONFIGS["IPFS"])
-        self.state = Idle()
-        self.state.worker = self
 
 if __name__ == '__main__':
     Worker()
