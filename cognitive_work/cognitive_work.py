@@ -41,4 +41,4 @@ def load_and_run(arch: str, weights: str, data: str, files_dir: str):
     out = model.predict(dataset)
     print('Cognition completed successfully:')
     h5w = h5py.File('out.hdf5', 'w')
-    h5f.create_dataset('dataset', data=out)
+    h5w.create_dataset('dataset', data=out)
